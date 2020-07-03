@@ -18,7 +18,10 @@ export class MessageService {
   public messages: Message[] = [];
 
   constructor(public http: HttpClient) {
-    this.subscribeNewMessages(msg => this.messages.push(msg));
+    this.subscribeNewMessages(msg => {
+      this.messages.push(msg);
+
+    });
   }
 
   subscribeNewMessages(onMessage: (message) => void) {

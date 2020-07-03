@@ -32,6 +32,8 @@ input {
   height: 80vh;
   overflow: auto;
   float: right;
+  flex-direction: column;
+  justify-content: flex-end;
 }
 
 .container {

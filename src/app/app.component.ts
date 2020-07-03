@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {AfterViewChecked, Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import {MessageService} from './service/message.service';
 import {MessageDto} from './dto/MessageDto';
 import {Message} from './entity/Message';
@@ -9,13 +9,15 @@ import {UserService} from './service/user.service';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
-export class AppComponent {
-  public firstMessage: Message;
+export class AppComponent implements OnInit, AfterViewChecked {
+  public firstMessage: Message = new Message();
   public message: MessageDto = new MessageDto();
   public id: number = parseInt(localStorage.getItem('id'));
   public messages: Message[];
-  public isFirstMessage = false;
-  public haveNewMessages = true;
+  public loaded: boolean = true;
+  public newMessages: number = 0;
+  @ViewChild('scroll')
+  scroll: ElementRef;
 
   constructor(public messageService: MessageService,
               public userService: UserService) {
@@ -30,32 +32,54 @@ export class AppComponent {
     messageService.getFirstMessage().subscribe(m => this.firstMessage = m);
   }
 
+  ngOnInit(): void {
+    if (this.loaded) {
+      setTimeout(() => {
+        this.focusOnFirstMessage();
+        this.loaded = false;
+      }, 30);
+    }
+  }
+
+  ngAfterViewChecked(): void {
+    if (this.newMessages < this.messageService.messages.length) {
+      this.newMessages++;
+      setTimeout(() => {
+        this.focusOnFirstMessage();
+      });
+    }
+  }
+
   sendMessage() {
     this.message.user_id = parseInt(localStorage.getItem('id'));
     this.messageService.sendMessage(this.message);
     this.message.value = '';
-    console.log(this.messageService.messages);
+    setTimeout(() => {
+      this.focusOnFirstMessage();
+    }, 30);
   }
 
   loadMessages() {
     this.messageService.getMessagesBeforeId(this.messages[0].id.toString()).subscribe(ms => {
       ms.forEach(m => this.messages.unshift(m));
     });
-    document.getElementsByTagName('div')[2].scrollTo(0, 1);
+    this.scroll.nativeElement.scrollTo(0, 1);
   }
 
-  scrollcheck() {
-    if (!this.isFirstMessage) {
-      if (this.messages.findIndex(m => m.id === this.firstMessage.id) < 0) {
-        if (document.getElementsByClassName('message')[0].scrollTop === document.getElementsByClassName('content')[0].scrollTop) {
-          this.loadMessages();
-        }
+  scrollCheck() {
+    if (!this.firstMessage) {
+      console.log(this.firstMessage);
+      this.messageService.getFirstMessage().subscribe(m => this.firstMessage = m);
+    }
+    if (this.messages.findIndex(m => m.id === this.firstMessage.id) < 0) {
+      if (this.scroll.nativeElement.scrollTop === 0) {
+        console.log('loading');
+        this.loadMessages();
       }
     }
   }
 
   focusOnFirstMessage() {
-    document.getElementsByTagName('div')[2].scrollTo(0, document.getElementsByTagName('div')[2].scrollHeight);
-    this.haveNewMessages = false;
+    this.scroll.nativeElement.scrollTop = this.scroll.nativeElement.scrollHeight;
   }
 }

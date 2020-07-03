@@ -1,6 +1,6 @@
 <div class="header"></div>
 <div class="container">
-  <div class="content" id="content1" (scroll)="scrollcheck()">
+  <div class="content" (scroll)="scrollCheck()" #scroll>
     <div class="message" *ngFor="let message of messages">
       {{message.value}}
     </div>
@@ -10,8 +10,8 @@
   </div>
   <div class="footer">
     <label>
-      <input type="text" class="text-input" placeholder="value" [(ngModel)]="message.value" name="value">
+      <input type="text" class="text-input" placeholder="value" [(ngModel)]="message.value" name="value" autofocus (keyup.enter)='sendMessage()'>
     </label>
-    <button (click)="sendMessage()">send</button>
+    <button (click)="focusOnFirstMessage()">focus</button>
   </div>
 </div>
