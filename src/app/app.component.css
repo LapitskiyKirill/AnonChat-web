@@ -1,0 +1,45 @@
+.footer {
+  bottom: 0;
+  height: 10vh;
+  position: fixed;
+  width: 60%;
+}
+
+.header {
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 10vh;
+  position: fixed;
+  background-color: gainsboro;
+}
+
+.text-input {
+  top: 0;
+  width: 80%;
+  height: 70%;
+  border-radius: 20px;
+}
+
+input {
+  outline: none;
+}
+
+.content {
+  top: 10vh;
+  position: fixed;
+  width: 60%;
+  height: 80vh;
+  overflow: auto;
+  float: right;
+}
+
+.container {
+  display: flex;
+  justify-content: center;
+}
+
+
+.message {
+  height: 40px;
+}
